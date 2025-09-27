@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee App Catalog</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #f8fafc;
+            padding: 8px 16px;
+            border-radius: 50px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 12px;
+        }
+        
+        .search-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 16px 24px 16px 50px;
+            border: 2px solid #e2e8f0;
+            border-radius: 50px;
+            font-size: 16px;
+            background: #fff;
+            transition: all 0.3s ease;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+        }
+        
+        .filters {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-chip {
+            padding: 8px 16px;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .filter-chip.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .filter-chip:hover {
+            background: #e2e8f0;
+            transform: translateY(-1px);
+        }
+        
+        .filter-chip.active:hover {
+            background: #5a67d8;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 24px;
+        }
+        
+        .sidebar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 24px;
+            height: fit-content;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: sticky;
+            top: 20px;
+        }
+        
+        .sidebar h3 {
+            margin-bottom: 16px;
+            color: #1e293b;
+            font-size: 18px;
+        }
+        
+        .category-list {
+            list-style: none;
+        }
+        
+        .category-item {
+            padding: 12px 16px;
+            margin-bottom: 4px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+        }
+        
+        .category-item:hover {
+            background: #f1f5f9;
+            transform: translateX(4px);
+        }
+        
+        .category-item.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .category-icon {
+            font-size: 18px;
+        }
+        
+        .apps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+        }
+        
+        .app-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .app-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+        }
+        
+        .app-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .app-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .app-info h4 {
+            font-size: 18px;
+            margin-bottom: 4px;
+            color: #1e293b;
+        }
+        
+        .app-info p {
+            color: #64748b;
+            font-size: 14px;
+        }
+        
+        .app-description {
+            color: #475569;
+            line-height: 1.5;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+        
+        .app-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .access-status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .access-granted {
+            background: #dcfce7;
+            color: #166534;
+        }
+        
+        .access-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .access-request {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+        
+        .request-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+        
+        .request-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+        
+        .stat-label {
+            color: #64748b;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                position: static;
+            }
+            
+            .apps-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 24px;
+            padding: 32px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal h3 {
+            margin-bottom: 16px;
+            color: #1e293b;
+        }
+        
+        .modal p {
+            color: #64748b;
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+        
+        .btn-secondary {
+            padding: 10px 20px;
+            background: #f8fafc;
+            color: #64748b;
+            border: 1px solid #e2e8f0;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-top">
+                <div class="logo">
+                    <div class="logo-icon">Z</div>
+                    <div>
+                        <h1 style="font-size: 24px; margin-bottom: 4px;">Employee App Catalog</h1>
+                        <p style="color: #64748b; font-size: 14px;">Your workplace, simplified</p>
+                    </div>
+                </div>
+                <div class="user-profile">
+                    <div class="user-avatar">AG</div>
+                    <div>
+                        <div style="font-weight: 600; font-size: 14px;">Arpit Gupta</div>
+                        <div style="color: #64748b; font-size: 12px;">Product Intern</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="quick-stats">
+                <div class="stat-card">
+                    <div class="stat-number">24</div>
+                    <div class="stat-label">Available Apps</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">12</div>
+                    <div class="stat-label">Apps Accessed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">3</div>
+                    <div class="stat-label">Pending Requests</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">94%</div>
+                    <div class="stat-label">Approval Rate</div>
+                </div>
+            </div>
+            
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="Search apps, tools, or services..." id="searchInput">
+                <span class="search-icon">🔍</span>
+            </div>
+            
+            <div class="filters">
+                <div class="filter-chip active" data-category="all">All Apps</div>
+                <div class="filter-chip" data-category="daily">Daily Essentials</div>
+                <div class="filter-chip" data-category="productivity">Productivity</div>
+                <div class="filter-chip" data-category="communication">Communication</div>
+                <div class="filter-chip" data-category="hr">HR & Admin</div>
+                <div class="filter-chip" data-category="support">IT Support</div>
+            </div>
+        </header>
+        
+        <div class="main-content">
+            <aside class="sidebar">
+                <h3>Categories</h3>
+                <ul class="category-list">
+                    <li class="category-item active" data-category="all">
+                        <span class="category-icon">📱</span>
+                        All Apps
+                    </li>
+                    <li class="category-item" data-category="daily">
+                        <span class="category-icon">⏰</span>
+                        Daily Essentials
+                    </li>
+                    <li class="category-item" data-category="productivity">
+                        <span class="category-icon">💼</span>
+                        Productivity
+                    </li>
+                    <li class="category-item" data-category="communication">
+                        <span class="category-icon">💬</span>
+                        Communication
+                    </li>
+                    <li class="category-item" data-category="hr">
+                        <span class="category-icon">👥</span>
+                        HR & Admin
+                    </li>
+                    <li class="category-item" data-category="support">
+                        <span class="category-icon">🛠️</span>
+                        IT Support
+                    </li>
+                </ul>
+                
+                <div style="margin-top: 32px;">
+                    <h3>Quick Actions</h3>
+                    <div style="margin-top: 16px;">
+                        <button class="request-btn" style="width: 100%; margin-bottom: 8px;">View My Apps</button>
+                        <button class="request-btn" style="width: 100%; background: #f8fafc; color: #64748b; border: 1px solid #e2e8f0;">Request History</button>
+                    </div>
+                </div>
+            </aside>
+            
+            <main>
+                <div class="apps-grid" id="appsGrid">
+                    <!-- Apps will be populated by JavaScript -->
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <div class="modal" id="requestModal">
+        <div class="modal-content">
+            <h3>Request App Access</h3>
+            <p>Your request will be sent to your manager for approval. You'll receive an email notification once it's processed.</p>
+            <div>
+                <p><strong>App:</strong> <span id="modalAppName"></span></p>
+                <p><strong>Estimated approval time:</strong> 24-48 hours</p>
+                <p><strong>Approver:</strong> Sarah Johnson (IT Manager)</p>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="request-btn" onclick="submitRequest()">Send Request</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const apps = [
+            {
+                name: "WorkDay Attendance",
+                category: "daily",
+                description: "Clock in/out, track hours, and manage your daily attendance with ease.",
+                icon: "⏰",
+                color: "linear-gradient(135deg, #667eea, #764ba2)",
+                status: "granted",
+                department: "All Employees"
+            },
+            {
+                name: "TimeSheet Pro",
+                category: "daily",
+                description: "Log project hours, track billable time, and generate timesheet reports.",
+                icon: "📊",
+                color: "linear-gradient(135deg, #f093fb, #f5576c)",
+                status: "granted",
+                department: "All Employees"
+            },
+            {
+                name: "Café Connect",
+                category: "daily",
+                description: "Order food from company cafeteria, view menus, and manage meal preferences.",
+                icon: "🍽️",
+                color: "linear-gradient(135deg, #4facfe, #00f2fe)",
+                status: "granted",
+                department: "All Employees"
+            },
+            {
+                name: "Ride Booker",
+                category: "daily",
+                description: "Book office transport, track arrival times, and manage route preferences.",
+                icon: "🚗",
+                color: "linear-gradient(135deg, #43e97b, #38f9d7)",
+                status: "request",
+                department: "All Employees"
+            },
+            {
+                name: "Feedback Hub",
+                category: "hr",
+                description: "Submit anonymous feedback, participate in surveys, and share suggestions.",
+                icon: "💭",
+                color: "linear-gradient(135deg, #fa709a, #fee140)",
+                status: "granted",
+                department: "All Employees"
+            },
+            {
+                name: "IT Support Portal",
+                category: "support",
+                description: "Raise IT tickets, track resolution status, and access self-help resources.",
+                icon: "🛠️",
+                color: "linear-gradient(135deg, #a8edea, #fed6e3)",
+                status: "granted",
+                department: "All Employees"
+            },
+            {
+                name: "Company Connect",
+                category: "communication",
+                description: "Internal networking, employee directory, and team collaboration tools.",
+                icon: "🌐",
+                color: "linear-gradient(135deg, #d299c2, #fef9d7)",
+                status: "pending",
+                department: "All Employees"
+            },
+            {
+                name: "PoSH Guardian",
+                category: "hr",
+                description: "Secure platform for reporting workplace harassment and seeking support.",
+                icon: "🛡️",
+                color: "linear-gradient(135deg, #667eea, #764ba2)",
+                status: "request",
+                department: "All Employees"
+            },
+            {
+                name: "News & Updates",
+                category: "communication",
+                description: "Stay updated with company news, announcements, and important notices.",
+                icon: "📰",
+                color: "linear-gradient(135deg, #f093fb, #f5576c)",
+                status: "granted",
+                department: "All Employees"
+            },
+            {
+                name: "Project Tracker",
+                category: "productivity",
+                description: "Track project progress, deadlines, and deliverables in real-time.",
+                icon: "📈",
+                color: "linear-gradient(135deg, #4facfe, #00f2fe)",
+                status: "granted",
+                department: "Development Team"
+            },
+            {
+                name: "Work Status",
+                category: "productivity",
+                description: "Mark tasks as pending/completed and track your daily productivity.",
+                icon: "✅",
+                color: "linear-gradient(135deg, #43e97b, #38f9d7)",
+                status: "granted",
+                department: "All Employees"
+            },
+            {
+                name: "Office Directory",
+                category: "communication",
+                description: "Find contact details for CEO, managers, HR, and team members.",
+                icon: "👤",
+                color: "linear-gradient(135deg, #fa709a, #fee140)",
+                status: "granted",
+                department: "All Employees"
+            },
+            {
+                name: "Slack Workspace",
+                category: "communication",
+                description: "Team messaging, channels, and file sharing for seamless collaboration.",
+                icon: "💬",
+                color: "linear-gradient(135deg, #667eea, #764ba2)",
+                status: "request",
+                department: "All Teams"
+            },
+            {
+                name: "Jira Projects",
+                category: "productivity",
+                description: "Agile project management, issue tracking, and sprint planning.",
+                icon: "🎯",
+                color: "linear-gradient(135deg, #0052CC, #2684FF)",
+                status: "pending",
+                department: "Development Team"
+            },
+            {
+                name: "Office 365",
+                category: "productivity",
+                description: "Access Word, Excel, PowerPoint, and other Microsoft productivity tools.",
+                icon: "📄",
+                color: "linear-gradient(135deg, #FF6B35, #F7931E)",
+                status: "granted",
+                department: "All Employees"
+            },
+            {
+                name: "Zoom Meetings",
+                category: "communication",
+                description: "Video conferencing for team meetings, client calls, and presentations.",
+                icon: "📹",
+                color: "linear-gradient(135deg, #2D8CFF, #4FAAFF)",
+                status: "granted",
+                department: "All Employees"
+            }
+        ];
+        
+        let currentFilter = 'all';
+        
+        function renderApps(appsToRender = apps) {
+            const grid = document.getElementById('appsGrid');
+            grid.innerHTML = '';
+            
+            appsToRender.forEach(app => {
+                const statusClass = app.status === 'granted' ? 'access-granted' : 
+                                   app.status === 'pending' ? 'access-pending' : 'access-request';
+                const statusText = app.status === 'granted' ? 'Access Granted' : 
+                                  app.status === 'pending' ? 'Approval Pending' : 'Request Access';
+                
+                const card = document.createElement('div');
+                card.className = 'app-card';
+                card.innerHTML = `
+                    <div class="app-header">
+                        <div class="app-icon" style="background: ${app.color}">
+                            ${app.icon}
+                        </div>
+                        <div class="app-info">
+                            <h4>${app.name}</h4>
+                            <p>${app.department}</p>
+                        </div>
+                    </div>
+                    <div class="app-description">
+                        ${app.description}
+                    </div>
+                    <div class="app-footer">
+                        <span class="access-status ${statusClass}">
+                            ${statusText}
+                        </span>
+                        ${app.status === 'request' ? 
+                            `<button class="request-btn" onclick="requestAccess('${app.name}')">Request</button>` : 
+                            app.status === 'granted' ? 
+                            `<button class="request-btn" style="background: #10b981;">Open App</button>` :
+                            `<button class="request-btn" style="background: #f59e0b; cursor: not-allowed;">Pending</button>`
+                        }
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+        
+        function filterApps(category) {
+            currentFilter = category;
+            const filteredApps = category === 'all' ? apps : apps.filter(app => app.category === category);
+            renderApps(filteredApps);
+            
+            // Update active states
+            document.querySelectorAll('.filter-chip, .category-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.dataset.category === category) {
+                    item.classList.add('active');
+                }
+            });
+        }
+        
+        function searchApps() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const filteredApps = apps.filter(app => 
+                app.name.toLowerCase().includes(searchTerm) ||
+                app.description.toLowerCase().includes(searchTerm) ||
+                app.department.toLowerCase().includes(searchTerm)
+            );
+            renderApps(filteredApps);
+        }
+        
+        function requestAccess(appName) {
+            document.getElementById('modalAppName').textContent = appName;
+            document.getElementById('requestModal').style.display = 'flex';
+        }
+        
+        function closeModal() {
+            document.getElementById('requestModal').style.display = 'none';
+        }
+        
+        function submitRequest() {
+            alert('Request submitted successfully! You will receive an email notification once approved.');
+            closeModal();
+        }
+        
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('input', searchApps);
+        
+        document.querySelectorAll('.filter-chip, .category-item').forEach(item => {
+            item.addEventListener('click', () => filterApps(item.dataset.category));
+        });
+        
+        // Initial render
+        renderApps();
+        
+        // Add some interactive animations
+        document.addEventListener('mousemove', (e) => {
+            const cards = document.querySelectorAll('.app-card');
+            cards.forEach(card => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                if (x >= 0 && x <= rect.width && y >= 0 && y <= rect.height) {
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    const rotateX = (y - centerY) / 10;
+                    const rotateY = (centerX - x) / 10;
+                    
+                    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-8px)`;
+                } else {
+                    card.style.transform = '';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
